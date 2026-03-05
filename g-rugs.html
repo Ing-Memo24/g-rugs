@@ -1,0 +1,731 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>G-RUGS — Tu Suelo, Tus Reglas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;900&family=IBM+Plex+Mono:wght@400;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --amber: #FFB300;
+      --burn: #FF4500;
+      --orange: #FF6B00;
+      --charcoal: #1a1a1a;
+      --deep: #0d0d0d;
+      --white: #F5F5F5;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background: var(--deep);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      overflow-x: hidden;
+    }
+
+    .mono { font-family: 'IBM Plex Mono', monospace; }
+
+    .concrete-bg {
+      background-color: #1c1c1c;
+      background-image:
+        url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23noise)' opacity='0.15'/%3E%3C/svg%3E"),
+        repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(255,255,255,0.01) 2px, rgba(255,255,255,0.01) 4px);
+    }
+
+    .burnished-g {
+      background: linear-gradient(135deg, #FF4500, #FFB300, #FF6B00, #FF8C00, #FF4500, #FF6B00);
+      background-size: 300% 300%;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: burnishShift 4s ease infinite;
+      filter: drop-shadow(0 0 40px rgba(255,179,0,0.4)) drop-shadow(0 0 80px rgba(255,69,0,0.3));
+    }
+
+    @keyframes burnishShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    .hard-shadow { box-shadow: 6px 6px 0px var(--amber); }
+
+    .amber-border { border: 1px solid var(--amber); }
+
+    .burn-glow {
+      box-shadow: 0 0 20px rgba(255,69,0,0.5), 0 0 40px rgba(255,69,0,0.2), inset 0 0 20px rgba(255,69,0,0.05);
+    }
+
+    @keyframes glitch1 {
+      0%,100% { clip-path: inset(0 0 95% 0);  transform: translate(-2px, 0); }
+      20%      { clip-path: inset(20% 0 60% 0); transform: translate(2px, 0); }
+      40%      { clip-path: inset(50% 0 30% 0); transform: translate(-1px, 0); }
+      60%      { clip-path: inset(80% 0 5% 0);  transform: translate(1px, 0); }
+      80%      { clip-path: inset(10% 0 85% 0); transform: translate(0px, 0); }
+    }
+    @keyframes glitch2 {
+      0%,100% { clip-path: inset(80% 0 5% 0);  transform: translate(2px, 0);  color: var(--amber); }
+      20%      { clip-path: inset(5% 0 80% 0);  transform: translate(-2px, 0); color: var(--burn); }
+      40%      { clip-path: inset(30% 0 50% 0); transform: translate(1px, 0); }
+      60%      { clip-path: inset(60% 0 20% 0); transform: translate(-1px, 0); }
+      80%      { clip-path: inset(90% 0 2% 0);  transform: translate(0px, 0); }
+    }
+
+    .glitch-wrap { position: relative; display: inline-block; }
+    .glitch-l1 { position: absolute; top:0; left:0; color: var(--amber); animation: glitch1 3s infinite; opacity: 0.6; pointer-events:none; }
+    .glitch-l2 { position: absolute; top:0; left:0; color: var(--burn);  animation: glitch2 3s infinite 0.1s; opacity: 0.6; pointer-events:none; }
+
+    .gallery-item {
+      overflow: hidden;
+      position: relative;
+      cursor: pointer;
+      transition: transform 0.3s ease;
+    }
+    .gallery-item:hover { transform: scale(1.02); }
+    .gallery-img {
+      width: 100%; height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: brightness(0.85) contrast(1.1) saturate(0.9);
+      transition: transform 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    }
+    .gallery-item:hover .gallery-img { transform: scale(1.08); }
+    .gallery-fire-overlay {
+      position: absolute; inset: 0;
+      background: linear-gradient(135deg, rgba(255,179,0,0.15), rgba(255,69,0,0.15), transparent);
+      opacity: 0;
+      transition: opacity 0.4s ease;
+      pointer-events: none;
+    }
+    .gallery-item:hover .gallery-fire-overlay { opacity: 1; }
+
+    .tag-icon {
+      width: 60px; height: 60px;
+      display: flex; align-items: center; justify-content: center;
+      border: 2px solid var(--orange);
+      transform: rotate(-5deg);
+      transition: transform 0.3s ease;
+      margin-bottom: 20px;
+    }
+    .tag-icon:hover { transform: rotate(0deg) scale(1.05); }
+
+    .nav-link {
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.75rem;
+      letter-spacing: 0.15em;
+      text-transform: uppercase;
+      color: var(--white);
+      text-decoration: none;
+      transition: color 0.2s;
+      padding: 4px 0;
+      border-bottom: 1px solid transparent;
+    }
+    .nav-link:hover { color: var(--amber); border-bottom-color: var(--amber); }
+
+    .form-input {
+      background: transparent;
+      border: 1px solid rgba(255,255,255,0.2);
+      border-bottom: 2px solid var(--amber);
+      color: var(--white);
+      padding: 12px 16px;
+      font-family: 'IBM Plex Mono', monospace;
+      font-size: 0.85rem;
+      width: 100%;
+      outline: none;
+      transition: border-color 0.3s, box-shadow 0.3s;
+    }
+    .form-input:focus { border-color: var(--burn); box-shadow: 0 4px 20px rgba(255,69,0,0.15); }
+    .form-input::placeholder { color: rgba(255,255,255,0.3); }
+    .form-input option { background: #1a1a1a; }
+    textarea.form-input { resize: vertical; min-height: 100px; }
+    select.form-input { cursor: pointer; }
+
+    .btn-burn {
+      background: var(--burn);
+      color: var(--white);
+      font-family: 'Inter', sans-serif;
+      font-weight: 900;
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 16px 40px;
+      border: none;
+      cursor: pointer;
+      box-shadow: 4px 4px 0px rgba(255,69,0,0.4), 0 0 30px rgba(255,69,0,0.4);
+      transition: transform 0.2s, box-shadow 0.2s;
+    }
+    .btn-burn:hover { transform: translate(-2px,-2px); box-shadow: 6px 6px 0px rgba(255,69,0,0.6), 0 0 50px rgba(255,69,0,0.6); }
+    .btn-burn:active { transform: translate(2px,2px); box-shadow: 2px 2px 0px rgba(255,69,0,0.4); }
+
+    .btn-outline-amber {
+      background: transparent;
+      border: 1px solid var(--amber);
+      color: var(--amber);
+      font-family: 'Inter', sans-serif;
+      font-weight: 700;
+      font-size: 0.85rem;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 16px 40px;
+      cursor: pointer;
+      transition: background 0.2s;
+      box-shadow: 4px 4px 0px rgba(255,179,0,0.2);
+    }
+    .btn-outline-amber:hover { background: rgba(255,179,0,0.1); }
+
+    .scanlines::after {
+      content: '';
+      position: absolute; inset: 0;
+      background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,0,0,0.15) 2px, rgba(0,0,0,0.15) 4px);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .reveal { opacity: 0; transform: translateY(30px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .reveal.visible { opacity: 1; transform: translateY(0); }
+
+    @keyframes marquee { from { transform: translateX(0); } to { transform: translateX(-50%); } }
+    .marquee-track { animation: marquee 18s linear infinite; display: flex; white-space: nowrap; }
+
+    .divider-line { width:100%; height:1px; background: linear-gradient(90deg, transparent, var(--amber), transparent); }
+
+    .step-number { font-family: 'IBM Plex Mono', monospace; font-size: 0.7rem; color: var(--orange); letter-spacing: 0.2em; }
+
+    /* Nav */
+    nav {
+      position: fixed; top:0; left:0; right:0; z-index:100;
+      border-bottom: 1px solid rgba(255,179,0,0.15);
+      backdrop-filter: blur(12px);
+      background: rgba(13,13,13,0.9);
+      padding: 0 40px; height: 60px;
+      display: flex; align-items: center; justify-content: space-between;
+    }
+    .nav-logo {
+      font-family: 'Inter', sans-serif; font-weight: 900; font-size: 1.4rem;
+      background: linear-gradient(135deg, #FF4500, #FFB300);
+      -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+      background-clip: text; letter-spacing: 0.05em;
+    }
+    .nav-inner { display: flex; gap:32px; align-items:center; }
+
+    /* Hero */
+    #hero {
+      min-height: 100vh; display:flex; flex-direction:column;
+      align-items:center; justify-content:center;
+      position:relative; padding-top:60px; overflow:hidden;
+    }
+    .noise-overlay {
+      position:absolute; inset:0; opacity:0.04; pointer-events:none; z-index:2;
+      background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='256' height='256' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+    .hero-content { text-align:center; position:relative; z-index:3; padding:0 20px; }
+    .hero-g {
+      font-size: clamp(180px, 25vw, 380px);
+      font-weight: 900; font-family:'Inter',sans-serif;
+      line-height: 0.85; margin-bottom:8px; user-select:none;
+      display: block;
+    }
+    .hero-rule { width:100%; max-width:600px; height:2px; background: linear-gradient(90deg, var(--burn), var(--amber)); margin: 16px auto; }
+    .hero-title {
+      font-family:'Inter',sans-serif; font-weight:900;
+      font-size: clamp(1.8rem,5vw,3.5rem);
+      letter-spacing:0.05em; text-transform:uppercase; line-height:1.1; margin-bottom:16px;
+    }
+    .hero-sub { font-size:clamp(0.75rem,1.5vw,1rem); letter-spacing:0.25em; color:rgba(255,255,255,0.5); text-transform:uppercase; margin-bottom:40px; }
+    .hero-btns { display:flex; gap:16px; justify-content:center; flex-wrap:wrap; }
+    .scroll-hint {
+      position:absolute; bottom:24px; left:50%; transform:translateX(-50%);
+      font-family:'IBM Plex Mono',monospace; font-size:0.65rem;
+      color:rgba(255,255,255,0.3); letter-spacing:0.2em;
+      display:flex; flex-direction:column; align-items:center; gap:6px;
+    }
+    .scroll-line { width:1px; height:30px; background: linear-gradient(180deg, rgba(255,179,0,0.5), transparent); }
+
+    /* Marquee band */
+    .marquee-band {
+      background: var(--burn); padding:10px 0; overflow:hidden;
+      border-top:1px solid rgba(255,255,255,0.2); border-bottom:1px solid rgba(255,255,255,0.2);
+      box-shadow: 0 0 30px rgba(255,69,0,0.4);
+    }
+    .marquee-item { font-family:'Inter',sans-serif; font-weight:900; font-size:0.8rem; letter-spacing:0.3em; text-transform:uppercase; color:white; margin-right:60px; }
+
+    /* Proceso */
+    #proceso { padding:100px 40px; max-width:1200px; margin:0 auto; }
+    .proceso-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(260px,1fr)); gap:2px; }
+    .proceso-card {
+      background:#111; border:1px solid rgba(255,107,0,0.2);
+      padding:32px; position:relative;
+      transition: border-color 0.3s, background 0.3s; cursor:default;
+    }
+    .proceso-card:hover { border-color: var(--orange); background:#161610; }
+    .proceso-dot { position:absolute; bottom:16px; right:16px; width:6px; height:6px; background:var(--orange); opacity:0.5; }
+    .spec-bar {
+      margin-top:2px; background:rgba(255,179,0,0.03);
+      border:1px solid var(--amber);
+      padding:20px 32px; display:flex; flex-wrap:wrap; gap:40px; align-items:center;
+    }
+    .spec-label { font-family:'IBM Plex Mono',monospace; font-size:0.6rem; color:rgba(255,179,0,0.5); letter-spacing:0.2em; display:block; margin-bottom:2px; }
+    .spec-value { font-family:'Inter',sans-serif; font-weight:900; font-size:1.1rem; color:var(--amber); }
+
+    /* Gallery */
+    #gallery { padding:100px 40px; max-width:1400px; margin:0 auto; }
+    .bento-grid {
+      display:grid;
+      grid-template-columns: repeat(4, 1fr);
+      grid-template-rows: repeat(3, 220px);
+      gap:4px;
+    }
+    .gallery-label-overlay {
+      position:absolute; bottom:0; left:0; right:0;
+      background: linear-gradient(transparent, rgba(0,0,0,0.85));
+      padding:20px 16px 12px;
+      display:flex; justify-content:space-between; align-items:flex-end;
+    }
+    .gallery-tag-badge {
+      position:absolute; top:12px; right:12px;
+      background:rgba(0,0,0,0.7); border:1px solid rgba(255,179,0,0.3);
+      padding:2px 8px;
+    }
+
+    /* Custom form */
+    #custom { padding:100px 40px; max-width:900px; margin:0 auto; }
+    .form-grid { display:grid; grid-template-columns:1fr 1fr; gap:24px; }
+    .form-full { grid-column: span 2; }
+    .form-end { grid-column: span 2; display:flex; justify-content:flex-end; }
+    .success-box {
+      border:1px solid var(--burn); padding:48px; text-align:center;
+      background:rgba(255,69,0,0.05);
+      box-shadow: 0 0 20px rgba(255,69,0,0.5), 0 0 40px rgba(255,69,0,0.2);
+      display:none;
+    }
+
+    /* Footer */
+    footer {
+      background:#0a0a0a; border-top:1px solid rgba(255,179,0,0.1);
+      padding:60px 40px 40px;
+    }
+    .footer-inner { max-width:1200px; margin:0 auto; }
+    .footer-top { display:flex; justify-content:space-between; align-items:flex-start; flex-wrap:wrap; gap:40px; margin-bottom:60px; }
+    .footer-logo {
+      font-family:'Inter',sans-serif; font-weight:900; font-size:3rem;
+      letter-spacing:0.05em;
+      background: linear-gradient(135deg, #FF4500, #FFB300);
+      -webkit-background-clip:text; -webkit-text-fill-color:transparent;
+      background-clip:text; display:block; margin-bottom:8px;
+    }
+    .footer-cols { display:flex; gap:60px; flex-wrap:wrap; }
+    .footer-col-title { font-family:'IBM Plex Mono',monospace; font-size:0.65rem; color:rgba(255,179,0,0.5); letter-spacing:0.25em; margin-bottom:16px; display:block; }
+    .footer-link { font-family:'Inter',sans-serif; font-size:0.85rem; color:rgba(255,255,255,0.4); text-decoration:none; display:block; margin-bottom:8px; transition:color 0.2s; }
+    .footer-link:hover { color:var(--white); }
+    .footer-bottom { display:flex; justify-content:space-between; align-items:center; margin-top:24px; flex-wrap:wrap; gap:12px; }
+
+    /* Corner markers */
+    .corner { position:absolute; font-family:'IBM Plex Mono',monospace; font-size:0.6rem; color:rgba(255,179,0,0.3); letter-spacing:0.15em; }
+    .c-tl { top:20px; left:20px; }
+    .c-tr { top:20px; right:20px; }
+    .c-bl { bottom:20px; left:20px; }
+    .c-br { bottom:20px; right:20px; }
+
+    @media (max-width: 768px) {
+      nav { padding: 0 20px; }
+      .nav-inner .nav-link { display:none; }
+      #proceso, #gallery, #custom { padding: 60px 20px; }
+      .bento-grid { grid-template-columns: repeat(2,1fr); grid-template-rows: repeat(6, 180px); }
+      .bento-1 { grid-column:span 2; grid-row:span 1; }
+      .bento-2 { grid-column:span 1; grid-row:span 2; }
+      .form-grid { grid-template-columns:1fr; }
+      .form-full, .form-end { grid-column:span 1; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div style="display:flex;align-items:center;gap:12px;">
+    <span class="nav-logo">G-RUGS</span>
+    <span class="mono" style="font-size:0.6rem;color:var(--orange);letter-spacing:0.2em;margin-top:2px;">®STUDIO</span>
+  </div>
+  <div class="nav-inner">
+    <a href="#proceso" class="nav-link">Proceso</a>
+    <a href="#gallery" class="nav-link">Gallery</a>
+    <a href="#custom" class="nav-link">Custom</a>
+    <button class="btn-burn" style="padding:8px 20px;font-size:0.7rem;" onclick="document.getElementById('custom').scrollIntoView({behavior:'smooth'})">DROP NOW →</button>
+  </div>
+</nav>
+
+<!-- HERO -->
+<section id="hero" class="concrete-bg scanlines">
+  <div class="noise-overlay"></div>
+  <span class="corner c-tl">[00]</span>
+  <span class="corner c-tr">[01]</span>
+  <span class="corner c-bl">[02]</span>
+  <span class="corner c-br">[03]</span>
+  <div style="position:absolute;left:0;right:0;top:50%;height:1px;background:linear-gradient(90deg,transparent,rgba(255,179,0,0.1),transparent);pointer-events:none;"></div>
+  <div style="position:absolute;top:0;bottom:0;left:50%;width:1px;background:linear-gradient(180deg,transparent,rgba(255,69,0,0.1),transparent);pointer-events:none;"></div>
+
+  <div class="hero-content reveal" id="hero-content">
+    <span class="hero-g burnished-g">G</span>
+    <div class="hero-rule"></div>
+    <h1 class="hero-title">
+      <span style="color:var(--white);">G-RUGS: </span>
+      <span style="color:var(--burn);text-shadow:0 0 30px rgba(255,69,0,0.5);">TU SUELO,</span><br>
+      <span style="color:var(--amber);text-shadow:0 0 30px rgba(255,179,0,0.4);">TUS REGLAS</span>
+    </h1>
+    <p class="hero-sub mono">Alfombras Custom · Urbano Premium · Arte Para Tu Suelo</p>
+    <div class="hero-btns">
+      <button class="btn-burn" onclick="document.getElementById('custom').scrollIntoView({behavior:'smooth'})">HAZ TU DROP →</button>
+      <button class="btn-outline-amber" onclick="document.getElementById('gallery').scrollIntoView({behavior:'smooth'})">VER GALLERY</button>
+    </div>
+  </div>
+
+  <div class="scroll-hint mono">
+    <span>SCROLL_DOWN</span>
+    <div class="scroll-line"></div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-band">
+  <div class="marquee-track" id="marquee"></div>
+</div>
+
+<!-- PROCESO -->
+<section id="proceso">
+  <div class="reveal" id="proceso-content">
+    <div style="margin-bottom:60px;">
+      <p class="step-number">// SECCIÓN_02 / EL PROCESO</p>
+      <h2 style="font-family:'Inter',sans-serif;font-weight:900;font-size:clamp(2rem,5vw,3.5rem);text-transform:uppercase;letter-spacing:0.03em;margin-top:8px;">
+        El Proceso <span style="color:var(--orange);text-shadow:0 0 20px rgba(255,107,0,0.4);">'Tagging'</span>
+      </h2>
+      <div class="mono" style="color:rgba(255,255,255,0.4);font-size:0.85rem;margin-top:8px;">Así lo hacemos. Sin secretos.</div>
+    </div>
+
+    <div class="proceso-grid">
+      <!-- Card 1 -->
+      <div class="proceso-card">
+        <div class="mono" style="font-size:0.6rem;color:rgba(255,107,0,0.4);margin-bottom:20px;letter-spacing:0.2em;">[EDGE_001]</div>
+        <div class="tag-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect x="2" y="8" width="24" height="18" rx="2" stroke="#FF6B00" stroke-width="2"/>
+            <line x1="8" y1="8" x2="6" y2="2" stroke="#FF6B00" stroke-width="2" stroke-linecap="round"/>
+            <line x1="16" y1="8" x2="16" y2="2" stroke="#FF6B00" stroke-width="2" stroke-linecap="round"/>
+            <line x1="10" y1="14" x2="20" y2="14" stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round"/>
+            <line x1="8" y1="19" x2="18" y2="19" stroke="#FF6B00" stroke-width="1.5" stroke-linecap="round"/>
+          </svg>
+        </div>
+        <h3 style="font-family:'Inter',sans-serif;font-weight:900;font-size:1.1rem;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Bordes de Precisión</h3>
+        <p style="color:var(--orange);font-family:'Inter',sans-serif;font-weight:700;font-size:0.85rem;margin-bottom:12px;">Sin Fallos.</p>
+        <p class="mono" style="color:rgba(255,255,255,0.4);font-size:0.75rem;line-height:1.6;">10×22 cm de margen exacto. Cada esquina es una declaración de intenciones.</p>
+        <div class="proceso-dot"></div>
+      </div>
+      <!-- Card 2 -->
+      <div class="proceso-card">
+        <div class="mono" style="font-size:0.6rem;color:rgba(255,107,0,0.4);margin-bottom:20px;letter-spacing:0.2em;">[TEX_002]</div>
+        <div class="tag-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <rect x="4" y="4" width="24" height="24" rx="1" stroke="#FF6B00" stroke-width="2"/>
+            <rect x="8" y="8" width="16" height="16" rx="1" stroke="#FF6B00" stroke-width="1" stroke-dasharray="2 2"/>
+            <circle cx="16" cy="16" r="4" stroke="#FF6B00" stroke-width="1.5"/>
+            <line x1="16" y1="4" x2="16" y2="8" stroke="#FF6B00" stroke-width="1.5"/>
+            <line x1="16" y1="24" x2="16" y2="28" stroke="#FF6B00" stroke-width="1.5"/>
+            <line x1="4" y1="16" x2="8" y2="16" stroke="#FF6B00" stroke-width="1.5"/>
+            <line x1="24" y1="16" x2="28" y2="16" stroke="#FF6B00" stroke-width="1.5"/>
+          </svg>
+        </div>
+        <h3 style="font-family:'Inter',sans-serif;font-weight:900;font-size:1.1rem;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Textura 3D Hardcore</h3>
+        <p style="color:var(--orange);font-family:'Inter',sans-serif;font-weight:700;font-size:0.85rem;margin-bottom:12px;">Lo tocas, lo sientes.</p>
+        <p class="mono" style="color:rgba(255,255,255,0.4);font-size:0.75rem;line-height:1.6;">Fibra premium loop-cut de alta densidad. No es una alfombra — es arquitectura táctil.</p>
+        <div class="proceso-dot"></div>
+      </div>
+      <!-- Card 3 -->
+      <div class="proceso-card">
+        <div class="mono" style="font-size:0.6rem;color:rgba(255,107,0,0.4);margin-bottom:20px;letter-spacing:0.2em;">[COL_003]</div>
+        <div class="tag-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <path d="M16 4 L26 22 Q26 28 16 28 Q6 28 6 22 Z" stroke="#FF6B00" stroke-width="2" fill="none"/>
+            <path d="M11 20 Q16 14 21 20" stroke="#FF6B00" stroke-width="1.5" fill="none" stroke-linecap="round"/>
+            <circle cx="16" cy="22" r="2" fill="#FF6B00" opacity="0.5"/>
+          </svg>
+        </div>
+        <h3 style="font-family:'Inter',sans-serif;font-weight:900;font-size:1.1rem;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Colores Sin Filtro</h3>
+        <p style="color:var(--orange);font-family:'Inter',sans-serif;font-weight:700;font-size:0.85rem;margin-bottom:12px;">Tintes que gritan.</p>
+        <p class="mono" style="color:rgba(255,255,255,0.4);font-size:0.75rem;line-height:1.6;">Pigmentación UV-resist. El naranja no se lava. El ámbar no se rinde.</p>
+        <div class="proceso-dot"></div>
+      </div>
+      <!-- Card 4 -->
+      <div class="proceso-card">
+        <div class="mono" style="font-size:0.6rem;color:rgba(255,107,0,0.4);margin-bottom:20px;letter-spacing:0.2em;">[CUST_004]</div>
+        <div class="tag-icon">
+          <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+            <polygon points="16,2 30,9 30,23 16,30 2,23 2,9" stroke="#FF6B00" stroke-width="2" fill="none"/>
+            <polygon points="16,8 24,12 24,20 16,24 8,20 8,12" stroke="#FF6B00" stroke-width="1" fill="none" opacity="0.5"/>
+            <line x1="16" y1="8" x2="16" y2="24" stroke="#FF6B00" stroke-width="1" stroke-dasharray="2 1"/>
+            <line x1="8" y1="12" x2="24" y2="20" stroke="#FF6B00" stroke-width="1" stroke-dasharray="2 1"/>
+            <line x1="24" y1="12" x2="8" y2="20" stroke="#FF6B00" stroke-width="1" stroke-dasharray="2 1"/>
+          </svg>
+        </div>
+        <h3 style="font-family:'Inter',sans-serif;font-weight:900;font-size:1.1rem;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:4px;">Drop Custom Total</h3>
+        <p style="color:var(--orange);font-family:'Inter',sans-serif;font-weight:700;font-size:0.85rem;margin-bottom:12px;">Tu diseño. Nuestras manos.</p>
+        <p class="mono" style="color:rgba(255,255,255,0.4);font-size:0.75rem;line-height:1.6;">Desde boceto hasta pieza final en 14 días. Artwork original o colaboración directa.</p>
+        <div class="proceso-dot"></div>
+      </div>
+    </div>
+
+    <!-- Spec bar -->
+    <div class="spec-bar">
+      <div><span class="spec-label">MARGEN ESTÁNDAR</span><span class="spec-value">10×22 cm</span></div>
+      <div><span class="spec-label">DENSIDAD</span><span class="spec-value">1.800 g/m²</span></div>
+      <div><span class="spec-label">ENTREGA</span><span class="spec-value">14 días</span></div>
+      <div><span class="spec-label">GUARANTEE</span><span class="spec-value">24 meses</span></div>
+    </div>
+  </div>
+</section>
+
+<div class="divider-line" style="margin:0 40px;"></div>
+
+<!-- GALLERY -->
+<section id="gallery">
+  <div class="reveal" id="gallery-content">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:60px;flex-wrap:wrap;gap:16px;">
+      <div>
+        <p class="step-number">// SECCIÓN_03 / THE GALLERY</p>
+        <h2 style="font-family:'Inter',sans-serif;font-weight:900;font-size:clamp(2rem,5vw,3.5rem);text-transform:uppercase;letter-spacing:0.03em;margin-top:8px;">
+          The Gallery <span style="color:var(--burn);text-shadow:0 0 20px rgba(255,69,0,0.4);">Drop</span>
+        </h2>
+      </div>
+      <span class="mono" style="font-size:0.75rem;color:rgba(255,255,255,0.3);letter-spacing:0.15em;">006 PIEZAS ACTIVAS</span>
+    </div>
+
+    <div class="bento-grid">
+
+      <!-- Item 1: 2×2 -->
+      <div class="gallery-item hard-shadow" style="grid-column:span 2;grid-row:span 2;border:1px solid rgba(255,255,255,0.06);background:#111;">
+        <img class="gallery-img" src="https://images.unsplash.com/photo-1558618666-fcd25c85cd64?w=800&q=80" alt="Geometric rug concrete loft" style="position:absolute;inset:0;"/>
+        <div class="gallery-fire-overlay"></div>
+        <div class="gallery-label-overlay">
+          <div>
+            <div class="mono" style="font-size:0.6rem;color:var(--amber);letter-spacing:0.2em;margin-bottom:2px;">#001</div>
+            <div style="font-family:'Inter',sans-serif;font-weight:900;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;">BURN CORE</div>
+          </div>
+          <div style="color:var(--burn);font-family:'Inter',sans-serif;font-weight:700;font-size:0.8rem;">desde €340</div>
+        </div>
+        <div class="gallery-tag-badge"><span class="mono" style="font-size:0.55rem;color:rgba(255,179,0,0.7);letter-spacing:0.15em;">AVAILABLE</span></div>
+      </div>
+
+      <!-- Item 2: 1×2 -->
+      <div class="gallery-item hard-shadow" style="grid-column:span 1;grid-row:span 2;border:1px solid rgba(255,255,255,0.06);background:#111;">
+        <img class="gallery-img" src="https://images.unsplash.com/photo-1586105251261-72a756497a11?w=800&q=80" alt="Textured rug warm close-up" style="position:absolute;inset:0;"/>
+        <div class="gallery-fire-overlay"></div>
+        <div class="gallery-label-overlay">
+          <div>
+            <div class="mono" style="font-size:0.6rem;color:var(--amber);letter-spacing:0.2em;margin-bottom:2px;">#002</div>
+            <div style="font-family:'Inter',sans-serif;font-weight:900;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;">AMBER SPIRAL</div>
+          </div>
+          <div style="color:var(--burn);font-family:'Inter',sans-serif;font-weight:700;font-size:0.8rem;">desde €280</div>
+        </div>
+        <div class="gallery-tag-badge"><span class="mono" style="font-size:0.55rem;color:rgba(255,179,0,0.7);letter-spacing:0.15em;">AVAILABLE</span></div>
+      </div>
+
+      <!-- Item 3: 1×1 -->
+      <div class="gallery-item hard-shadow" style="grid-column:span 1;grid-row:span 1;border:1px solid rgba(255,255,255,0.06);background:#111;">
+        <img class="gallery-img" src="https://images.unsplash.com/photo-1542291026-7eec264c27ff?w=800&q=80" alt="Hypebeast sneakers" style="position:absolute;inset:0;"/>
+        <div class="gallery-fire-overlay"></div>
+        <div class="gallery-label-overlay">
+          <div>
+            <div class="mono" style="font-size:0.6rem;color:var(--amber);letter-spacing:0.2em;margin-bottom:2px;">#004</div>
+            <div style="font-family:'Inter',sans-serif;font-weight:900;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;">ORBIT</div>
+          </div>
+          <div style="color:var(--burn);font-family:'Inter',sans-serif;font-weight:700;font-size:0.8rem;">desde €220</div>
+        </div>
+        <div class="gallery-tag-badge"><span class="mono" style="font-size:0.55rem;color:rgba(255,179,0,0.7);letter-spacing:0.15em;">AVAILABLE</span></div>
+      </div>
+
+      <!-- Item 4: 2×1 -->
+      <div class="gallery-item hard-shadow" style="grid-column:span 2;grid-row:span 1;border:1px solid rgba(255,255,255,0.06);background:#111;">
+        <img class="gallery-img" src="https://images.unsplash.com/photo-1555041469-a586c61ea9bc?w=800&q=80" alt="Urban interior rug" style="position:absolute;inset:0;"/>
+        <div class="gallery-fire-overlay"></div>
+        <div class="gallery-label-overlay">
+          <div>
+            <div class="mono" style="font-size:0.6rem;color:var(--amber);letter-spacing:0.2em;margin-bottom:2px;">#003</div>
+            <div style="font-family:'Inter',sans-serif;font-weight:900;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;">GRID PHANTOM</div>
+          </div>
+          <div style="color:var(--burn);font-family:'Inter',sans-serif;font-weight:700;font-size:0.8rem;">desde €380</div>
+        </div>
+        <div class="gallery-tag-badge"><span class="mono" style="font-size:0.55rem;color:rgba(255,179,0,0.7);letter-spacing:0.15em;">AVAILABLE</span></div>
+      </div>
+
+      <!-- Item 5: 1×1 -->
+      <div class="gallery-item hard-shadow" style="grid-column:span 1;grid-row:span 1;border:1px solid rgba(255,255,255,0.06);background:#111;">
+        <img class="gallery-img" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80" alt="Abstract rug texture" style="position:absolute;inset:0;"/>
+        <div class="gallery-fire-overlay"></div>
+        <div class="gallery-label-overlay">
+          <div>
+            <div class="mono" style="font-size:0.6rem;color:var(--amber);letter-spacing:0.2em;margin-bottom:2px;">#006</div>
+            <div style="font-family:'Inter',sans-serif;font-weight:900;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;">QUAD</div>
+          </div>
+          <div style="color:var(--burn);font-family:'Inter',sans-serif;font-weight:700;font-size:0.8rem;">desde €260</div>
+        </div>
+        <div class="gallery-tag-badge"><span class="mono" style="font-size:0.55rem;color:rgba(255,179,0,0.7);letter-spacing:0.15em;">AVAILABLE</span></div>
+      </div>
+
+      <!-- Item 6: 2×1 -->
+      <div class="gallery-item hard-shadow" style="grid-column:span 2;grid-row:span 1;border:1px solid rgba(255,255,255,0.06);background:#111;">
+        <img class="gallery-img" src="https://images.unsplash.com/photo-1616486338812-3dadae4b4ace?w=800&q=80" alt="Dark moody loft" style="position:absolute;inset:0;"/>
+        <div class="gallery-fire-overlay"></div>
+        <div class="gallery-label-overlay">
+          <div>
+            <div class="mono" style="font-size:0.6rem;color:var(--amber);letter-spacing:0.2em;margin-bottom:2px;">#005</div>
+            <div style="font-family:'Inter',sans-serif;font-weight:900;font-size:0.85rem;text-transform:uppercase;letter-spacing:0.05em;">DIAMOND</div>
+          </div>
+          <div style="color:var(--burn);font-family:'Inter',sans-serif;font-weight:700;font-size:0.8rem;">desde €300</div>
+        </div>
+        <div class="gallery-tag-badge"><span class="mono" style="font-size:0.55rem;color:rgba(255,179,0,0.7);letter-spacing:0.15em;">AVAILABLE</span></div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<div class="divider-line" style="margin:0 40px;"></div>
+
+<!-- CUSTOM FORM -->
+<section id="custom">
+  <div class="reveal" id="form-content">
+    <div style="margin-bottom:60px;">
+      <p class="step-number">// SECCIÓN_04 / TU DROP</p>
+      <h2 style="font-family:'Inter',sans-serif;font-weight:900;font-size:clamp(2rem,5vw,3.5rem);text-transform:uppercase;letter-spacing:0.03em;margin-top:8px;">
+        Haz Tu Drop <span style="color:var(--burn);text-shadow:0 0 20px rgba(255,69,0,0.4);">Custom</span>
+      </h2>
+      <p class="mono" style="color:rgba(255,255,255,0.4);font-size:0.85rem;margin-top:8px;line-height:1.6;">Cada pieza es única. Rellena el brief y te contactamos en 24h.</p>
+    </div>
+
+    <div class="success-box burn-glow" id="success-box">
+      <div style="font-family:'Inter',sans-serif;font-weight:900;font-size:2rem;color:var(--burn);margin-bottom:12px;">DROP RECIBIDO ✦</div>
+      <p class="mono" style="color:rgba(255,255,255,0.5);font-size:0.85rem;">Te contactamos en menos de 24h. Prepárate.</p>
+    </div>
+
+    <div class="form-grid" id="contact-form">
+      <div>
+        <label class="mono" style="font-size:0.65rem;color:rgba(255,179,0,0.6);letter-spacing:0.2em;display:block;margin-bottom:8px;">NOMBRE / CREW</label>
+        <input class="form-input" type="text" placeholder="Tu nombre o nombre del colectivo" id="f-nombre"/>
+      </div>
+      <div>
+        <label class="mono" style="font-size:0.65rem;color:rgba(255,179,0,0.6);letter-spacing:0.2em;display:block;margin-bottom:8px;">EMAIL</label>
+        <input class="form-input" type="email" placeholder="tu@email.com" id="f-email"/>
+      </div>
+      <div>
+        <label class="mono" style="font-size:0.65rem;color:rgba(255,179,0,0.6);letter-spacing:0.2em;display:block;margin-bottom:8px;">MEDIDAS (cm)</label>
+        <input class="form-input" type="text" placeholder="Ej: 120 × 180 cm" id="f-medidas"/>
+      </div>
+      <div>
+        <label class="mono" style="font-size:0.65rem;color:rgba(255,179,0,0.6);letter-spacing:0.2em;display:block;margin-bottom:8px;">MATERIAL</label>
+        <select class="form-input" id="f-material">
+          <option value="">Selecciona material</option>
+          <option>Loop-Cut Premium</option>
+          <option>Shaggy Urban</option>
+          <option>Flatweave Graphic</option>
+          <option>Tufted 3D</option>
+        </select>
+      </div>
+      <div class="form-full">
+        <label class="mono" style="font-size:0.65rem;color:rgba(255,179,0,0.6);letter-spacing:0.2em;display:block;margin-bottom:8px;">CONCEPTO / ARTWORK</label>
+        <textarea class="form-input" placeholder="Descríbenos tu visión. Colores, referencias, mood, lo que sea. Sin límites." id="f-concepto"></textarea>
+      </div>
+      <div class="form-end">
+        <button class="btn-burn" style="font-size:1rem;padding:18px 60px;" onclick="submitForm()">ENVIAR DROP REQUEST →</button>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-inner">
+    <div class="footer-top">
+      <div>
+        <span class="footer-logo glitch-wrap">
+          <span>G-RUGS</span>
+          <span class="glitch-l1" aria-hidden="true">G-RUGS</span>
+          <span class="glitch-l2" aria-hidden="true">G-RUGS</span>
+        </span>
+        <p class="mono" style="color:rgba(255,255,255,0.3);font-size:0.75rem;max-width:280px;line-height:1.7;">
+          Arte urbano para tu suelo. No hacemos alfombras, hacemos drops de arte custom. Atrevido, ruidoso, exclusivo.
+        </p>
+      </div>
+      <div class="footer-cols">
+        <div>
+          <span class="footer-col-title">STUDIO</span>
+          <a href="#" class="footer-link">Sobre Nosotros</a>
+          <a href="#" class="footer-link">Colaboraciones</a>
+          <a href="#" class="footer-link">Press Kit</a>
+          <a href="#" class="footer-link">Contacto</a>
+        </div>
+        <div>
+          <span class="footer-col-title">DROPS</span>
+          <a href="#" class="footer-link">Colección 2025</a>
+          <a href="#" class="footer-link">Ediciones Limitadas</a>
+          <a href="#" class="footer-link">Archive</a>
+          <a href="#" class="footer-link">Custom</a>
+        </div>
+        <div>
+          <span class="footer-col-title">CONNECT</span>
+          <a href="#" class="footer-link">Instagram</a>
+          <a href="#" class="footer-link">TikTok</a>
+          <a href="#" class="footer-link">Newsletter</a>
+          <a href="#" class="footer-link">WhatsApp</a>
+        </div>
+      </div>
+    </div>
+
+    <div class="divider-line"></div>
+
+    <div class="footer-bottom">
+      <span class="glitch-wrap mono" style="font-size:0.65rem;color:rgba(255,255,255,0.2);letter-spacing:0.1em;">
+        <span>© 2025 G-RUGS STUDIO. TODOS LOS DERECHOS RESERVADOS.</span>
+        <span class="glitch-l1" aria-hidden="true">© 2025 G-RUGS STUDIO. TODOS LOS DERECHOS RESERVADOS.</span>
+        <span class="glitch-l2" aria-hidden="true">© 2025 G-RUGS STUDIO. TODOS LOS DERECHOS RESERVADOS.</span>
+      </span>
+      <div class="mono" style="font-size:0.6rem;color:rgba(255,179,0,0.2);letter-spacing:0.15em;">v2.5.1 · BUILD_URBAN · DROP_READY</div>
+    </div>
+  </div>
+</footer>
+
+<script>
+  // Marquee
+  const marqueeItems = ["G-RUGS","TU SUELO TUS REGLAS","ARTE URBANO","DROPS CUSTOM","EXCLUSIVO","PREMIUM","STREETWEAR"];
+  const track = document.getElementById('marquee');
+  const allItems = [...marqueeItems,...marqueeItems,...marqueeItems,...marqueeItems];
+  track.innerHTML = allItems.map(t => `<span class="marquee-item">${t} <span style="opacity:0.5;margin-right:60px;">✦</span></span>`).join('');
+
+  // Scroll reveal
+  const reveals = document.querySelectorAll('.reveal');
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+  }, { threshold: 0.1 });
+  reveals.forEach(el => observer.observe(el));
+
+  // Trigger hero immediately
+  setTimeout(() => document.getElementById('hero-content').classList.add('visible'), 100);
+
+  // Form submit
+  function submitForm() {
+    document.getElementById('contact-form').style.display = 'none';
+    const box = document.getElementById('success-box');
+    box.style.display = 'block';
+    setTimeout(() => {
+      box.style.display = 'none';
+      document.getElementById('contact-form').style.display = 'grid';
+      ['f-nombre','f-email','f-medidas','f-concepto'].forEach(id => document.getElementById(id).value = '');
+      document.getElementById('f-material').value = '';
+    }, 4000);
+  }
+</script>
+</body>
+</html>
